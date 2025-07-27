@@ -1,0 +1,133 @@
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+function XPByProjectChart({ projects }) {
+  if (!projects || projects.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-gray-500 text-lg">No project data available</p>
+      </div>
+    );
+  }
+
+  // Transform data for the chart
+  const chartData = projects
+    .slice(0, 12) // Get latest 12 projects
+    .reverse() // Show oldest to newest
+    .map((project, index) => ({
+      name: project.object?.name || `Project ${index + 1}`,
+      xp: (project.amount / 1000).toFixed(2), // Convert to KB
+      fullName: project.object?.name || `Project ${index + 1}`,
+      date: new Date(project.createdAt).toLocaleDateString(),
+      amount: project.amount
+    }));
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-semibold text-purple-700">{data.fullName}</p>
+          <p className="text-sm text-gray-600">XP: {data.xp} KB</p>
+          <p className="text-xs text-gray-500">Completed: {data.date}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const CustomLabel = ({ x, y, width, height, value }) => {
+    // Only show label if bar is tall enough
+    if (height < 20) return null;
+    
+    return (
+      <text 
+        x={x + width / 2} 
+        y={y + height / 2} 
+        fill="white" 
+        textAnchor="middle" 
+        dominantBaseline="middle"
+        fontSize="12"
+        fontWeight="bold"
+      >
+        {value}
+      </text>
+    );
+  };
+
+  // Truncate long project names for X-axis
+  const truncateName = (name, maxLength = 10) => {
+    if (name.length <= maxLength) return name;
+    return name.substring(0, maxLength) + '...';
+  };
+
+  const maxXP = Math.max(...chartData.map(item => parseFloat(item.xp)));
+  const yAxisMax = Math.ceil(maxXP * 1.1); // Add 10% padding to top
+
+  return (
+    <div className="w-full h-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={chartData}
+          margin={{
+            top: 20,
+            right: 30,
+            left: 20,
+            bottom: 60
+          }}
+          barCategoryGap="20%"
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <XAxis 
+            dataKey="name"
+            tick={{ fontSize: 12, fill: '#666' }}
+            angle={-45}
+            textAnchor="end"
+            height={80}
+            interval={0}
+            tickFormatter={(value) => truncateName(value, 8)}
+          />
+          <YAxis 
+            tick={{ fontSize: 12, fill: '#666' }}
+            label={{ 
+              value: 'XP (KB)', 
+              angle: -90, 
+              position: 'insideLeft',
+              style: { textAnchor: 'middle', fill: '#666' }
+            }}
+            domain={[0, yAxisMax]}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Bar 
+            dataKey="xp" 
+            fill="url(#colorGradient)"
+            radius={[4, 4, 0, 0]}
+            label={<CustomLabel />}
+          >
+          </Bar>
+          
+          {/* Define gradient */}
+          <defs>
+            <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#8b5cf6" stopOpacity={1}/>
+              <stop offset="100%" stopColor="#6366f1" stopOpacity={1}/>
+            </linearGradient>
+          </defs>
+        </BarChart>
+      </ResponsiveContainer>
+      
+      <div className="mt-4 text-center">
+        <p className="text-sm text-gray-600">
+          Showing latest {Math.min(projects.length, 12)} projects
+        </p>
+        <p className="text-xs text-gray-500 mt-1">
+          Total XP: <span className="font-semibold text-purple-600">
+            {chartData.reduce((sum, item) => sum + parseFloat(item.xp), 0).toFixed(2)} KB
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default XPByProjectChart;
