@@ -21,11 +21,11 @@ function PassFailChart({ passCount, failCount }) {
       const data = payload[0];
       const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-semibold" style={{ color: data.payload.color }}>
+        <div className="custom-tooltip">
+          <p className="tooltip-title" style={{ color: data.payload.color }}>
             {data.name}: {data.value}
           </p>
-          <p className="text-sm text-gray-600">
+          <p className="tooltip-subtitle">
             {percentage}% of total
           </p>
         </div>
@@ -59,22 +59,22 @@ function PassFailChart({ passCount, failCount }) {
 
   if (total === 0) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500 text-lg">No project data available</p>
+      <div className="no-data-container">
+        <p className="no-data-text">No project data available</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full">
-      <div className="mb-4 grid grid-cols-2 gap-4 text-center">
-        <div className="bg-green-50 p-3 rounded-lg">
-          <div className="text-2xl font-bold text-green-600">{passCount}</div>
-          <div className="text-sm text-green-700">Passed ({passPercentage}%)</div>
+    <div className="chart-container">
+      <div className="stats-grid">
+        <div className="stats-card stats-card-green">
+          <div className="stats-number stats-number-green">{passCount}</div>
+          <div className="stats-label stats-label-green">Passed ({passPercentage}%)</div>
         </div>
-        <div className="bg-red-50 p-3 rounded-lg">
-          <div className="text-2xl font-bold text-red-600">{failCount}</div>
-          <div className="text-sm text-red-700">Failed ({failPercentage}%)</div>
+        <div className="stats-card stats-card-red">
+          <div className="stats-number stats-number-red">{failCount}</div>
+          <div className="stats-label stats-label-red">Failed ({failPercentage}%)</div>
         </div>
       </div>
 
@@ -107,12 +107,12 @@ function PassFailChart({ passCount, failCount }) {
         </PieChart>
       </ResponsiveContainer>
 
-      <div className="mt-4 text-center">
-        <p className="text-sm text-gray-600">
-          Total Projects: <span className="font-semibold">{total}</span>
+      <div className="chart-summary">
+        <p className="summary-text">
+          Total Projects: <span className="summary-highlight">{total}</span>
         </p>
-        <p className="text-xs text-gray-500 mt-1">
-          Success Rate: <span className="font-semibold text-green-600">{passPercentage}%</span>
+        <p className="summary-subtext">
+          Success Rate: <span className="success-rate">{passPercentage}%</span>
         </p>
       </div>
     </div>

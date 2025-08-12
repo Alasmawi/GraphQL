@@ -125,12 +125,12 @@ function Login() {
             )}
           </form>
           
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-gray-600 text-sm mb-3">Use your Reboot credentials:</p>
-            <p className="text-xs text-gray-500 mt-2">
-              Enter your Reboot email or username and password
+            <div className="login-info-section">
+            <p className="login-info-text">Use your Reboot credentials:</p>
+             <p className="login-info-subtext">
+             Enter your Reboot email or username and password
             </p>
-          </div>
+         </div>
         </div>
       </div>
     </div>

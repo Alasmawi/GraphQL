@@ -57,7 +57,7 @@ function XPByProjectChart({ projects }) {
   };
 
   // Truncate long project names for X-axis
-  const truncateName = (name, maxLength = 10) => {
+  const truncateName = (name, maxLength = 19) => {
     if (name.length <= maxLength) return name;
     return name.substring(0, maxLength) + '...';
   };
@@ -117,16 +117,16 @@ function XPByProjectChart({ projects }) {
         </BarChart>
       </ResponsiveContainer>
       
-      <div className="mt-4 text-center">
-        <p className="text-sm text-gray-600">
-          Showing latest {Math.min(projects.length, 10)} projects
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          Total XP: <span className="font-semibold text-blue-600">
-            {chartData.reduce((sum, item) => sum + parseFloat(item.xp), 0).toFixed(2)} KB
-          </span>
-        </p>
-      </div>
+      <div className="chart-info-section">
+  <p className="chart-info-text">
+    Showing latest {Math.min(projects.length, 10)} projects
+  </p>
+  <p className="chart-info-subtext">
+    Total XP: <span className="chart-total-xp">
+      {chartData.reduce((sum, item) => sum + parseFloat(item.xp), 0).toFixed(2)} KB
+    </span>
+  </p>
+</div>
     </div>
   );
 }

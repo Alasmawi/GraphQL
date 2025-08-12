@@ -31,7 +31,7 @@ function ErrorPage() {
           </div>
         </div>
         
-        <div className="mt-12 text-purple-200 text-sm">
+        <div className="error-footer">
           <p>Lost? Try one of the links above to get back on track.</p>
         </div>
       </div>
