@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
+import { isTokenValid, getTimeUntilExpiration, handleExpiredToken } from '../utils/jwtUtils';
 import {
   GET_USER_INFO,
   GEt_Total_XPInKB,
@@ -15,9 +17,11 @@ import XPByProjectChart from './Graphs/XPByProjectChart';
 import backgroundVideo from '../assets/background.mp4';
 
 function Profile() {
+  const navigate = useNavigate();
   const { data: userData, loading: userLoading, error: userError } = useQuery(GET_USER_INFO);
   const [userId, setUserId] = useState(null);
   const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     if (userData && userData.user && userData.user.length > 0) {
@@ -33,6 +37,46 @@ function Profile() {
       localStorage.removeItem('animateFromLogin'); // Clear the flag
     }
   }, []);
+
+  // Token expiration monitoring
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    
+    // Check token validity immediately
+    if (!isTokenValid(token)) {
+      handleExpiredToken(navigate);
+      return;
+    }
+
+    // Set up periodic token validation
+    const checkTokenInterval = setInterval(() => {
+      const currentToken = localStorage.getItem('token');
+      if (!isTokenValid(currentToken)) {
+        handleExpiredToken(navigate);
+        clearInterval(checkTokenInterval);
+      }
+    }, 60000); // Check every minute
+
+    // Optional: Set up auto-logout just before expiration
+    const timeUntilExpiration = getTimeUntilExpiration(token);
+    if (timeUntilExpiration && timeUntilExpiration > 0) {
+      // Auto-logout 1 minute before expiration
+      const autoLogoutTime = Math.max(timeUntilExpiration - 60000, 0);
+      const autoLogoutTimer = setTimeout(() => {
+        console.log('Token expiring soon, auto-logout triggered');
+        handleExpiredToken(navigate);
+      }, autoLogoutTime);
+
+      return () => {
+        clearInterval(checkTokenInterval);
+        clearTimeout(autoLogoutTimer);
+      };
+    }
+
+    return () => {
+      clearInterval(checkTokenInterval);
+    };
+  }, [navigate]);
 
   const { data: xpdata, loading: xpLoading, error: xpError } = useQuery(GEt_Total_XPInKB, { 
     variables: { userId },
@@ -108,11 +152,17 @@ function Profile() {
   const latestProjects = latestProjectsData?.transaction || [];
 
   const handleLogout = () => {
-    if (window.confirm("Are you sure you want to log out?")) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
-    }
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   return (
@@ -239,13 +289,39 @@ function Profile() {
           </div>
 
           <div className="chart-card">
-            <h2 className="chart-title">XP by Latest 12 Projects</h2>
+            <h2 className="chart-title">XP by Latest 10 Projects</h2>
             <div className="chart-container">
               <XPByProjectChart projects={latestProjects} />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Custom Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="logout-modal-overlay" onClick={cancelLogout}>
+          <div className="logout-modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="logout-modal-title">Confirm Logout</h3>
+            <p className="logout-modal-message">
+              Are you sure you want to log out? You will need to sign in again to access your profile.
+            </p>
+            <div className="logout-modal-buttons">
+              <button
+                className="logout-modal-btn logout-modal-btn-cancel"
+                onClick={cancelLogout}
+              >
+                Cancel
+              </button>
+              <button
+                className="logout-modal-btn logout-modal-btn-confirm"
+                onClick={confirmLogout}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

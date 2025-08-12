@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isTokenValid } from '../utils/jwtUtils';
 import backgroundVideo from '../assets/background.mp4';
 
 function Login() {
@@ -57,11 +58,16 @@ function Login() {
     }
   };
 
-  // Check if user is already logged in
+  // Check if user is already logged in with a valid token
   React.useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    if (isTokenValid(token)) {
       navigate('/profile');
+    } else if (token) {
+      // Remove expired token
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      console.log('Expired token removed from localStorage');
     }
   }, [navigate]);
 

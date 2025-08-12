@@ -26,10 +26,16 @@ function XPByProjectChart({ projects }) {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-semibold text-blue-700">{data.fullName}</p>
-          <p className="text-sm text-gray-600">XP: {data.xp} KB</p>
-          <p className="text-xs text-gray-500">Completed: {data.date}</p>
+        <div className="custom-tooltip">
+          <p className="tooltip-title">
+            {data.fullName}
+          </p>
+          <p className="tooltip-subtitle">
+            XP: {data.xp} KB
+          </p>
+          <p className="tooltip-subtitle">
+            Completed: {data.date}
+          </p>
         </div>
       );
     }
