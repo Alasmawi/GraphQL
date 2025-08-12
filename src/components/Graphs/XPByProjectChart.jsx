@@ -12,7 +12,7 @@ function XPByProjectChart({ projects }) {
 
   // Transform data for the chart
   const chartData = projects
-    .slice(0, 12) // Get latest 12 projects
+    .slice(0, 10) // Get latest 10 projects
     .reverse() // Show oldest to newest
     .map((project, index) => ({
       name: project.object?.name || `Project ${index + 1}`,
@@ -27,7 +27,7 @@ function XPByProjectChart({ projects }) {
       const data = payload[0].payload;
       return (
         <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-semibold text-purple-700">{data.fullName}</p>
+          <p className="font-semibold text-blue-700">{data.fullName}</p>
           <p className="text-sm text-gray-600">XP: {data.xp} KB</p>
           <p className="text-xs text-gray-500">Completed: {data.date}</p>
         </div>
@@ -37,17 +37,18 @@ function XPByProjectChart({ projects }) {
   };
 
   const CustomLabel = ({ x, y, width, height, value }) => {
-    // Only show label if bar is tall enough
-    if (height < 20) return null;
+    // Always show label, position it above the bar if too short
+    const labelY = height < 25 ? y - 10 : y + height / 2;
+    const labelColor = height < 25 ? "#3b82f6" : "white";
     
     return (
       <text 
         x={x + width / 2} 
-        y={y + height / 2} 
-        fill="white" 
+        y={labelY} 
+        fill={labelColor} 
         textAnchor="middle" 
         dominantBaseline="middle"
-        fontSize="12"
+        fontSize="11"
         fontWeight="bold"
       >
         {value}
@@ -66,7 +67,7 @@ function XPByProjectChart({ projects }) {
 
   return (
     <div className="w-full h-full">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={350}>
         <BarChart
           data={chartData}
           margin={{
@@ -75,7 +76,7 @@ function XPByProjectChart({ projects }) {
             left: 20,
             bottom: 60
           }}
-          barCategoryGap="20%"
+          barCategoryGap="10%"
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis 
@@ -109,8 +110,8 @@ function XPByProjectChart({ projects }) {
           {/* Define gradient */}
           <defs>
             <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8b5cf6" stopOpacity={1}/>
-              <stop offset="100%" stopColor="#6366f1" stopOpacity={1}/>
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity={1}/>
+              <stop offset="100%" stopColor="#1e40af" stopOpacity={1}/>
             </linearGradient>
           </defs>
         </BarChart>
@@ -118,10 +119,10 @@ function XPByProjectChart({ projects }) {
       
       <div className="mt-4 text-center">
         <p className="text-sm text-gray-600">
-          Showing latest {Math.min(projects.length, 12)} projects
+          Showing latest {Math.min(projects.length, 10)} projects
         </p>
         <p className="text-xs text-gray-500 mt-1">
-          Total XP: <span className="font-semibold text-purple-600">
+          Total XP: <span className="font-semibold text-blue-600">
             {chartData.reduce((sum, item) => sum + parseFloat(item.xp), 0).toFixed(2)} KB
           </span>
         </p>

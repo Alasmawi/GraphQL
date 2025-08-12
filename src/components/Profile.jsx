@@ -12,16 +12,27 @@ import {
 } from '../graphql/queries';
 import PassFailChart from './Graphs/PassFailChart';
 import XPByProjectChart from './Graphs/XPByProjectChart';
+import backgroundVideo from '../assets/background.mp4';
 
 function Profile() {
   const { data: userData, loading: userLoading, error: userError } = useQuery(GET_USER_INFO);
   const [userId, setUserId] = useState(null);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
 
   useEffect(() => {
     if (userData && userData.user && userData.user.length > 0) {
       setUserId(userData.user[0].id);
     }
   }, [userData]);
+
+  useEffect(() => {
+    // Check if we should animate (coming from login)
+    const animateFromLogin = localStorage.getItem('animateFromLogin');
+    if (animateFromLogin === 'true') {
+      setShouldAnimate(true);
+      localStorage.removeItem('animateFromLogin'); // Clear the flag
+    }
+  }, []);
 
   const { data: xpdata, loading: xpLoading, error: xpError } = useQuery(GEt_Total_XPInKB, { 
     variables: { userId },
@@ -61,10 +72,10 @@ function Profile() {
   if (userLoading || xpLoading || projectsLoading || passFailLoading || latestProjectsLoading || piscineGoXPLoading || piscineJsXPLoading || projectXPLoading) {
     return (
       <div className="profile-bg">
-        <div className="container mx-auto p-4 bg-gray-100 bg-opacity-20 min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
-            <div className="text-white text-xl font-bold">Loading your profile...</div>
+        <div className="profile-container loading-container">
+          <div>
+            <div className="animate-spin loading-spinner"></div>
+            <div className="loading-text">Loading your profile...</div>
           </div>
         </div>
       </div>
@@ -74,11 +85,11 @@ function Profile() {
   if (userError || xpError || projectsError || passFailError || latestProjectsError || piscineGoXPError || piscineJsXPError || projectXPError) {
     return (
       <div className="profile-bg">
-        <div className="container mx-auto p-4 bg-gray-100 bg-opacity-20 min-h-screen flex items-center justify-center">
-          <div className="text-center text-white">
-            <div className="text-6xl mb-4">⚠️</div>
-            <div className="text-xl font-bold mb-2">Error loading profile data</div>
-            <div className="text-red-200">Please try refreshing the page</div>
+        <div className="profile-container loading-container">
+          <div className="error-container">
+            <div className="error-icon">⚠️</div>
+            <div className="error-title">Error loading profile data</div>
+            <div className="error-message">Please try refreshing the page</div>
           </div>
         </div>
       </div>
@@ -106,67 +117,77 @@ function Profile() {
 
   return (
     <div className="profile-bg">
-      <div className="container mx-auto p-4 bg-gray-100 bg-opacity-20">
-        <header className="flex justify-between items-center mb-6 bg-purple-700 text-white p-4 rounded-lg shadow-lg">
-          <h1 className="text-3xl font-bold">School Profile</h1>
+      <video 
+        className="profile-bg-video" 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+        src={backgroundVideo}
+      >
+        Your browser does not support the video tag.
+      </video>
+      <div className={`profile-container ${shouldAnimate ? 'slide-up-from-login' : ''}`}>
+        <header className="profile-header">
+          <h1 className="profile-title">School Profile</h1>
           <button
             onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-600 transition"
+            className="logout-btn"
           >
             Logout
           </button>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-6">
+        <div className="profile-grid">
+          <div className="main-content">
             {/* Basic Info Section */}
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-              <div className="px-4 py-5 sm:px-6 bg-purple-600 text-white">
-                <h3 className="text-lg leading-6 font-medium">Basic Information</h3>
+            <div className="info-card">
+              <div className="card-header">
+                <h3 className="card-title">Basic Information</h3>
               </div>
-              <div className="border-t border-gray-200">
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 py-5">
-                  <div className="flex items-center space-x-4 col-span-2 sm:col-span-1">
-                    <div className="h-20 w-20 rounded-full bg-purple-500 flex items-center justify-center text-2xl font-bold text-white">
+              <div className="card-content">
+                <div className="basic-info-grid">
+                  <div className="user-avatar">
+                    <div className="avatar-circle">
                       {currentUser.firstName && currentUser.lastName
                         ? `${currentUser.firstName[0]}${currentUser.lastName[0]}`
                         : currentUser.login?.slice(0, 2).toUpperCase()}
                     </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">{currentUser.firstName} {currentUser.lastName}</h2>
-                      <p className="text-purple-600">@{currentUser.login}</p>
+                    <div className="user-details">
+                      <h2>{currentUser.firstName} {currentUser.lastName}</h2>
+                      <p>@{currentUser.login}</p>
                     </div>
                   </div>
-                  <div className="space-y-2 col-span-2 sm:col-span-1">
-                    <p><span className="font-semibold text-purple-600">ID:</span> {currentUser.id}</p>
-                    <p><span className="font-semibold text-purple-600">Email:</span> {currentUser.email}</p>
-                    <p><span className="font-semibold text-purple-600">Started Program:</span> {new Date(currentUser.updatedAt).toLocaleDateString()}</p>
-                    <p><span className="font-semibold text-purple-600">Account Created:</span> {new Date(currentUser.createdAt).toLocaleDateString()}</p>
+                  <div className="user-info">
+                    <p><span className="info-label">ID:</span> {currentUser.id}</p>
+                    <p><span className="info-label">Email:</span> {currentUser.email}</p>
+                    <p><span className="info-label">Started Program:</span> {new Date(currentUser.updatedAt).toLocaleDateString()}</p>
+                    <p><span className="info-label">Account Created:</span> {new Date(currentUser.createdAt).toLocaleDateString()}</p>
                   </div>
-                </dl>
+                </div>
               </div>
             </div>
 
             {/* XP Summary Section */}
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-              <div className="px-4 py-5 sm:px-6 bg-purple-600 text-white">
-                <h3 className="text-lg leading-6 font-medium">XP Summary</h3>
+            <div className="info-card">
+              <div className="card-header">
+                <h3 className="card-title">XP Summary</h3>
               </div>
-              <div className="border-t border-gray-200 px-4 py-5">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  <div className="col-span-2 sm:col-span-3">
-                    <p className="text-lg font-semibold text-purple-700">Total XP: {totalXPInKB} KB</p>
-                  </div>
+              <div className="card-content">
+                <div className="xp-grid">
                   <div>
-                    <p className="font-semibold text-purple-600">Piscine Go XP</p>
+                    <p className="total-xp">Total XP: {totalXPInKB} KB</p>
+                  </div>
+                  <div className="xp-item">
+                    <p>Piscine Go XP</p>
                     <p>{piscineGoXPTotal.toFixed(2)} KB</p>
                   </div>
-                  <div>
-                    <p className="font-semibold text-purple-600">Piscine JS XP</p>
+                  <div className="xp-item">
+                    <p>Piscine JS XP</p>
                     <p>{piscineJsXPTotal.toFixed(2)} KB</p>
                   </div>
-                  <div>
-                    <p className="font-semibold text-purple-600">Project XP</p>
+                  <div className="xp-item">
+                    <p>Project XP</p>
                     <p>{projectXPTotal.toFixed(2)} KB</p>
                   </div>
                 </div>
@@ -175,31 +196,31 @@ function Profile() {
           </div>
 
           {/* Finished Projects Section */}
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="px-4 py-5 sm:px-6 bg-purple-600 text-white">
-              <h3 className="text-lg leading-6 font-medium">Finished Projects</h3>
+          <div className="info-card">
+            <div className="card-header">
+              <h3 className="card-title">Finished Projects</h3>
             </div>
-            <div className="border-t border-gray-200">
-              <div className="finished-projects-container px-4 py-5 h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-200">
+            <div className="card-content">
+              <div className="projects-container">
                 {projects.length === 0 ? (
-                  <div className="text-center text-gray-500 py-8">
+                  <div className="no-projects">
                     <p>No projects completed yet</p>
                   </div>
                 ) : (
                   projects.map((project, index) => (
-                    <div key={project.id} className="mb-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{project.object?.name}</h3>
-                          <p className="text-sm text-gray-500">
+                    <div key={project.id} className="project-item">
+                      <div className="project-header">
+                        <div className="project-info">
+                          <h3>{project.object?.name}</h3>
+                          <p>
                             Completed: {new Date(project.createdAt).toLocaleDateString()}
                           </p>
                         </div>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        <span className="xp-badge">
                           {(project.amount / 1000).toFixed(2)} KB
                         </span>
                       </div>
-                      {index < projects.length - 1 && <hr className="my-2 border-gray-200" />}
+                      {index < projects.length - 1 && <hr className="project-divider" />}
                     </div>
                   ))
                 )}
@@ -209,18 +230,18 @@ function Profile() {
         </div>
 
         {/* Charts Section */}
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-            <h2 className="text-xl font-bold mb-4 text-purple-700">XP by Latest 12 Projects</h2>
-            <div className="w-full h-[500px]">
-              <XPByProjectChart projects={latestProjects} />
+        <div className="charts-grid">
+          <div className="chart-card">
+            <h2 className="chart-title">Projects PASS and FAIL Ratio</h2>
+            <div className="chart-center">
+              <PassFailChart passCount={passCount} failCount={failCount} />
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-            <h2 className="text-xl font-bold mb-4 text-purple-700">Projects PASS and FAIL Ratio</h2>
-            <div className="flex justify-center items-center">
-              <PassFailChart passCount={passCount} failCount={failCount} />
+          <div className="chart-card">
+            <h2 className="chart-title">XP by Latest 12 Projects</h2>
+            <div className="chart-container">
+              <XPByProjectChart projects={latestProjects} />
             </div>
           </div>
         </div>

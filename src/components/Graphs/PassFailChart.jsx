@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 
 const COLORS = {
   pass: '#10B981', // Green
-  fail: '#EF4444'  // Red
+  fail: '#f70909ff'  // Red
 };
 
 function PassFailChart({ passCount, failCount }) {

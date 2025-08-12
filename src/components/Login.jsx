@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import backgroundVideo from '../assets/background.mp4';
 
 function Login() {
   const [identifier, setIdentifier] = useState('');
@@ -35,7 +36,20 @@ function Login() {
 
       const data = await response.json();
       localStorage.setItem('token', data);
-      navigate('/profile');
+      localStorage.setItem('animateFromLogin', 'true');
+      
+      // Trigger slide-up animation and navigate immediately
+      const loginContainer = document.querySelector('.login-form-container');
+      if (loginContainer) {
+        loginContainer.classList.add('slide-up');
+        
+        // Navigate immediately so profile appears as login starts leaving
+        setTimeout(() => {
+          navigate('/profile');
+        }, 100); // Small delay to ensure animation starts
+      } else {
+        navigate('/profile');
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -53,6 +67,16 @@ function Login() {
 
   return (
     <div className="login-page-bg">
+      <video 
+        className="login-bg-video" 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+        src={backgroundVideo}
+      >
+        Your browser does not support the video tag.
+      </video>
       <div className="login-form-container">
         <div className="login-form-card">
           <h1 className="login-title">Welcome Back</h1>
