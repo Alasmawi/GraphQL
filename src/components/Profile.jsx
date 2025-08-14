@@ -131,7 +131,7 @@ function Profile() {
       <div className="profile-bg">
         <div className="profile-container loading-container">
           <div className="error-container">
-            <div className="error-icon">⚠️</div>
+            <div className="error-icon"></div>
             <div className="error-title">Error loading profile data</div>
             <div className="error-message">Please try refreshing the page</div>
           </div>

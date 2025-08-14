@@ -4,8 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 function XPByProjectChart({ projects }) {
   if (!projects || projects.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-gray-500 text-lg">No project data available</p>
+      <div className="no-data-container">
+        <p className="no-data-text">No project data available</p>
       </div>
     );
   }
@@ -72,8 +72,8 @@ function XPByProjectChart({ projects }) {
   const yAxisMax = Math.ceil(maxXP * 1.1); // Add 10% padding to top
 
   return (
-    <div className="w-full h-full">
-      <ResponsiveContainer width="100%" height={350}>
+    <div className="chart-container">
+      <ResponsiveContainer width="100%" height={300}>
         <BarChart
           data={chartData}
           margin={{
@@ -113,7 +113,6 @@ function XPByProjectChart({ projects }) {
           >
           </Bar>
           
-          {/* Define gradient */}
           <defs>
             <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#3b82f6" stopOpacity={1}/>
@@ -124,15 +123,15 @@ function XPByProjectChart({ projects }) {
       </ResponsiveContainer>
       
       <div className="chart-info-section">
-  <p className="chart-info-text">
-    Showing latest {Math.min(projects.length, 10)} projects
-  </p>
-  <p className="chart-info-subtext">
-    Total XP: <span className="chart-total-xp">
-      {chartData.reduce((sum, item) => sum + parseFloat(item.xp), 0).toFixed(2)} KB
-    </span>
-  </p>
-</div>
+        <p className="chart-info-text">
+          Showing latest {Math.min(projects.length, 10)} projects
+        </p>
+        <p className="chart-info-subtext">
+          Total XP: <span className="chart-total-xp">
+            {chartData.reduce((sum, item) => sum + parseFloat(item.xp), 0).toFixed(2)} KB
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

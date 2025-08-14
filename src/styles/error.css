@@ -1,0 +1,83 @@
+/* Error page */
+
+.error-page-container {
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #0b244d 0%, #000 85%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.error-content {
+  text-align: center;
+  max-width: 640px;
+  padding: 2rem 1.5rem;
+}
+
+.error-header {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.error-404 {
+  font-size: 7rem;
+  font-weight: 700;
+  color: #fff;
+  opacity: 0.12;
+  margin: 0;
+  line-height: 1;
+}
+
+.error-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #e0ecff;
+  margin: -3.5rem 0 1rem;
+  position: relative;
+}
+
+.error-description {
+  font-size: 1.125rem;
+  color: #9fb6d4;
+  margin: 0 0 2rem;
+}
+
+.error-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.error-btn-primary {
+  display: inline-block;
+  background: linear-gradient(90deg, #2156b5 0%, #0b244d 100%);
+  color: #fff;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: background 0.25s, transform 0.2s;
+}
+
+.error-btn-primary:hover {
+  background: linear-gradient(90deg, #3172e6 0%, #113463 100%);
+  transform: translateY(-2px);
+}
+
+.error-link-container { display: block; }
+
+.error-link-secondary {
+  color: #8fb8ff;
+  text-decoration: underline;
+  transition: color 0.25s;
+}
+
+.error-link-secondary:hover { color: #fff; }
+
+.error-footer {
+  margin-top: 3rem;
+  color: #6f89a6;
+  font-size: 0.875rem;
+}

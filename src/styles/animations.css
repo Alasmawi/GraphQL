@@ -1,0 +1,40 @@
+/* Keyframes & animation helper classes */
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes loginCardSlideUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-100vh) scale(0.9); opacity: 0; }
+}
+
+@keyframes profileCardSlideUp {
+  0% { transform: translateY(80vh) scale(0.95); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.login-form-container.slide-up {
+  animation: loginCardSlideUp 1.5s cubic-bezier(.25, .46, .45, .94) forwards;
+  will-change: transform, opacity;
+}
+
+.profile-container.slide-up-from-login {
+  animation: profileCardSlideUp 1.5s cubic-bezier(.25, .46, .45, .94) forwards;
+  will-change: transform, opacity;
+}

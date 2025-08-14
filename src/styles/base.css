@@ -1,0 +1,73 @@
+/* Base & global styles */
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Scrollbar styling */
+.scrollbar-thin::-webkit-scrollbar { width: 8px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #555; }
+.scrollbar-thumb-purple-500::-webkit-scrollbar-thumb { background: #8b5cf6; }
+.scrollbar-track-gray-200::-webkit-scrollbar-track { background: #e5e7eb; }
+
+/* Shared background video wrappers */
+.profile-bg {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.profile-bg-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  object-fit: cover;
+}
+
+/* Loading / generic feedback */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.loading-spinner { margin: 0 auto 1rem; }
+
+.loading-text {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.error-container { text-align: center; color: white; }
+.error-icon { font-size: 3.75rem; margin-bottom: 1rem; }
+.error-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+.error-message { background: #fee; color: rgb(255, 6, 6); padding: 10px; border-radius: 5px; margin-top: 15px; font-size: 14px; border: 1px solid #fcc; }
+.success-message { background: #efe; color: #363; padding: 10px; border-radius: 5px; margin-top: 15px; font-size: 14px; border: 1px solid #cfc; }
