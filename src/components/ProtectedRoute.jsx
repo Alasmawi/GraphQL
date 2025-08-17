@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { isTokenValid } from '../utils/jwtUtils';
 
 // Immediate reactive protection: re-validates on token mutation, tab focus, storage events
