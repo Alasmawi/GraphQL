@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { isTokenValid } from '../utils/jwtUtils';
+import React, { useState, useEffect } from 'react';
 
 // Immediate reactive protection: re-validates on token mutation, tab focus, storage events
 function ProtectedRoute({ children }) {
